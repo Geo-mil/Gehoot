@@ -1,0 +1,32 @@
+[
+  {
+    "texto": "Según Jeremías 1:5, ¿cuándo fue Jeremías llamado y santificado como profeta?",
+    "opciones": ["Antes de nacer", "Al cumplir 30 años", "Al salir de la cisterna", "Al llegar a Egipto"],
+    "correcta": 0,
+    "segundos": 10
+  },
+  {
+    "texto": "¿De qué tipo de familia procedía Jeremías?",
+    "opciones": ["De una familia real", "De una familia de sacerdotes", "De una familia de pescadores", "De una familia de pastores"],
+    "correcta": 1,
+    "segundos": 10
+  },
+  {
+    "texto": "¿Qué profeta del Libro de Mormón vivió en Jerusalén en la misma época que Jeremías?",
+    "opciones": ["Alma", "Mormón", "Lehi", "Moroni"],
+    "correcta": 2,
+    "segundos": 10
+  },
+  {
+    "texto": "Según el Libro de Mormón (1 Nefi 5:13), ¿dónde estaban escritas también profecías de Jeremías?",
+    "opciones": ["En las planchas de oro", "En la Liahona", "En las tablas de Moisés", "En las planchas de bronce"],
+    "correcta": 3,
+    "segundos": 10
+  },
+  {
+    "texto": "Tras la caída de Jerusalén, ¿adónde llevaron a Jeremías los judíos que huyeron?",
+    "opciones": ["A Egipto", "A Babilonia", "A Asiria", "A Grecia"],
+    "correcta": 0,
+    "segundos": 10
+  }
+]

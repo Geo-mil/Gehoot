@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gehoot · Presentador</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="host">
+<div id="net" class="hidden"></div>
+<main>
+  <section id="s-pin" class="hidden center">
+    <h1>PIN incorrecto</h1>
+    <p class="muted">Abre esta página con <code>host.html?pin=XXXX</code></p>
+  </section>
+
+  <section id="s-lobby" class="hidden">
+    <div class="top">
+      <h1>Gehoot</h1>
+      <button class="btn" id="b-start" disabled>Empezar</button>
+    </div>
+    <div class="lobby">
+      <div class="center">
+        <div id="qr"></div>
+        <div class="muted" style="margin-top:8px">Código de sala</div>
+        <div class="code" id="room"></div>
+      </div>
+      <div>
+        <div class="url" id="url"></div>
+        <h2 id="pcount">0 jugadores</h2>
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="s-question" class="hidden">
+    <div class="top">
+      <h2 id="q-num"></h2>
+      <button class="btn" id="b-close">Cerrar pregunta</button>
+    </div>
+    <div class="qtext" id="q-text"></div>
+    <div class="qmeta">
+      <div class="timer" id="q-timer"></div>
+      <div class="counter"><div id="q-answers" style="font-size:3rem">0</div>respuestas</div>
+    </div>
+    <div class="opts" id="q-opts"></div>
+  </section>
+
+  <section id="s-reveal" class="hidden">
+    <h2 id="r-num"></h2>
+    <div class="qtext" id="r-text"></div>
+    <div class="opts" id="r-opts"></div>
+    <h2>Top 5</h2>
+    <ol class="rank" id="r-top"></ol>
+    <div class="actions"><button class="btn" id="b-next">Siguiente</button></div>
+  </section>
+
+  <section id="s-final" class="hidden">
+    <h1 class="center">🏆 Resultados</h1>
+    <div class="podium" id="podium"></div>
+    <ol class="rank" id="f-rank"></ol>
+    <div class="actions"><button class="btn" id="b-reset">Nueva partida</button></div>
+  </section>
+
+  <section id="s-error" class="hidden center">
+    <h1>Error</h1>
+    <p id="err"></p>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="rt.js"></script>
+<script src="host.js"></script>
+</body>
+</html>

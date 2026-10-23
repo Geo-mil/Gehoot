@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#2b0f5c">
+<title>Gehoot</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="player">
+<div id="net" class="hidden"></div>
+<main>
+  <section id="s-join" class="screen hidden">
+    <h1 class="center huge">Gehoot</h1>
+    <form id="f-join">
+      <input id="i-room" inputmode="numeric" maxlength="4" placeholder="Código de sala" autocomplete="off">
+      <input id="i-name" maxlength="20" placeholder="Tu nombre" autocomplete="off" required>
+      <button class="btn" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <section id="s-wait" class="screen hidden center">
+    <p class="big">¡Estás dentro!</p>
+    <p class="huge" id="w-name"></p>
+    <p class="muted big" id="w-msg">Espera a que empiece…</p>
+  </section>
+
+  <section id="s-question" class="screen hidden">
+    <div class="qbar"><span id="q-num"></span><span id="q-timer"></span></div>
+    <div id="answers"></div>
+  </section>
+
+  <section id="s-sent" class="screen hidden center">
+    <div class="result neutral">
+      <p class="huge" id="sent-shape"></p>
+      <p class="big">Respuesta enviada</p>
+      <p class="muted">Espera a que se cierre la pregunta…</p>
+    </div>
+  </section>
+
+  <section id="s-result" class="screen hidden center">
+    <div class="result" id="r-box">
+      <p class="huge" id="r-title"></p>
+      <p class="big" id="r-pts"></p>
+      <p class="big" id="r-pos"></p>
+    </div>
+  </section>
+
+  <section id="s-final" class="screen hidden center">
+    <p class="big">Fin del juego</p>
+    <p class="huge" id="f-pos"></p>
+    <p class="big" id="f-pts"></p>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
+<script src="rt.js"></script>
+<script src="player.js"></script>
+</body>
+</html>
