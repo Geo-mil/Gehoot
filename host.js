@@ -6,6 +6,8 @@ const $ = (id) => document.getElementById(id);
 let QUESTIONS = [];
 let G = null;            // estado de la partida
 let conn = null;
+let netOk = { main: false, inbox: false };
+let pending = null;      // envío agrupado pendiente
 let online = new Set();  // ids de jugadores conectados (presence)
 
 function newGame() {
@@ -45,7 +47,14 @@ function publicState() {
 }
 
 function broadcast() {
+  clearTimeout(pending);
+  pending = null;
   if (conn) conn.send(publicState());
+}
+
+// Para cambios menores (respuestas, entradas): como mucho un envío por segundo.
+function scheduleBroadcast() {
+  if (!pending) pending = setTimeout(broadcast, 1000);
 }
 
 function deadline() {
@@ -56,7 +65,7 @@ function deadline() {
 function onMessage(m) {
   if (!m || typeof m !== 'object') return;
   if (m.t === 'join') return onJoin(m);
-  if (m.t === 'hello') return broadcast();
+  if (m.t === 'hello') return scheduleBroadcast();
   if (m.t === 'answer') return onAnswer(m);
 }
 
@@ -73,15 +82,15 @@ function onJoin(m) {
     save();
     render();
   }
-  broadcast();
+  scheduleBroadcast();
 }
 
 function onAnswer(m) {
   // Tiempo medido con el reloj del host, al recibir.
   const now = Date.now();
-  if (G.phase !== 'question' || m.q !== G.q) return broadcast();
+  if (G.phase !== 'question' || m.q !== G.q) return scheduleBroadcast();
   if (!G.players.some((p) => p.id === m.id)) return;
-  if (G.answers[m.id]) return broadcast();               // solo la primera respuesta
+  if (G.answers[m.id]) return scheduleBroadcast();       // solo la primera respuesta
   const c = Number(m.c);
   if (!(c >= 0 && c <= 3)) return;
   const q = QUESTIONS[G.q];
@@ -90,13 +99,13 @@ function onAnswer(m) {
   G.answers[m.id] = { c, ms, pts };
   save();
   renderCounter();
-  broadcast();
   maybeClose();
+  if (G.phase === 'question') scheduleBroadcast();     // confirma las respuestas en bloque
 }
 
 function onPresence(ch, ev) {
   online = new Set(Object.keys(ch.presenceState()));
-  if (ev === 'join') broadcast();   // entra o se reconecta alguien: reenviar estado
+  if (ev === 'join') scheduleBroadcast();   // entra o se reconecta alguien: reenviar estado
   render();
 }
 
@@ -259,7 +268,9 @@ function tick() {
   maybeClose();
 }
 
-function setNet(ok) {
+function setNet(which, ok) {
+  netOk[which] = ok;
+  ok = netOk.main && netOk.inbox;
   const n = $('net');
   if (ok) n.classList.add('hidden');
   else {
@@ -303,14 +314,18 @@ async function init() {
   conn = connectRoom(G.room, {
     onMessage,
     onPresence,
-    onStatus: (ok) => { setNet(ok); if (ok) broadcast(); },
+    onStatus: (ok) => { setNet('main', ok); if (ok) broadcast(); },
   });
-  setNet(false);
+  const inbox = connectRoom(inboxTopic(G.room), {
+    onMessage,
+    onStatus: (ok) => setNet('inbox', ok),
+  });
+  setNet('main', false);
   render();
 
   setInterval(tick, 200);
   setInterval(broadcast, 3000);   // latido: los móviles detectan cortes y se resincronizan
-  window.addEventListener('online', () => conn.reconnect());
+  window.addEventListener('online', () => { conn.reconnect(); inbox.reconnect(); });
 }
 
 init();

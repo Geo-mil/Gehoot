@@ -6,6 +6,7 @@ const me = lsGet(STORE) || {};
 if (!me.id) me.id = shuffleId();
 let S = null;            // último estado recibido del host
 let conn = null;
+let toHost = null;       // envío jugador → host (buzón, con respaldo por el canal normal)
 let subscribed = false;
 let lastMsg = 0;
 let deadlineLocal = 0;   // fin de la pregunta según el reloj del móvil (solo para mostrar)
@@ -47,6 +48,7 @@ function start() {
   show('s-wait');
   $('w-name').textContent = me.name;
   $('w-msg').textContent = 'Conectando…';
+  toHost = makeInboxSender(me.room, (p) => conn.send(p));
   conn = connectRoom(me.room, {
     presenceKey: me.id,
     presencePayload: () => ({ id: me.id }),
@@ -54,8 +56,7 @@ function start() {
     onStatus: (ok) => {
       subscribed = ok;
       if (ok) {
-        conn.send({ t: 'join', id: me.id, name: me.name });
-        conn.send({ t: 'hello' });
+        toHost({ t: 'join', id: me.id, name: me.name });
       }
       updateNet();
     },
@@ -80,7 +81,7 @@ function onMessage(m) {
   const inGame = S.players.find((p) => p.id === me.id);
   if (!inGame) {
     // El host aún no nos tiene (o es otra partida): pedir entrar.
-    conn.send({ t: 'join', id: me.id, name: me.name });
+    toHost({ t: 'join', id: me.id, name: me.name });
   } else if (inGame.name !== me.name) {
     me.name = inGame.name;   // el host pudo añadir un sufijo
     save();
@@ -172,8 +173,8 @@ function sendAnswer() {
   clearTimeout(resendTimer);
   if (!myAnswer || !S || S.phase !== 'question' || S.q !== myAnswer.q) return;
   if (S.answered.includes(me.id)) return;
-  conn.send({ t: 'answer', id: me.id, q: myAnswer.q, c: myAnswer.c });
-  resendTimer = setTimeout(sendAnswer, 1500);   // reintento hasta que el host lo confirme
+  toHost({ t: 'answer', id: me.id, q: myAnswer.q, c: myAnswer.c });
+  resendTimer = setTimeout(sendAnswer, 3000);   // reintento hasta que el host lo confirme
 }
 
 // ---------- Conexión ----------

@@ -67,6 +67,19 @@ function connectRoom(room, opts) {
   };
 }
 
+// Buzón jugador → host: canal que solo escucha el host. El jugador no se suscribe
+// (supabase-js lo envía por HTTP), así las respuestas no se reparten a todos los móviles.
+function inboxTopic(room) { return room + '-in'; }
+
+function makeInboxSender(room, fallback) {
+  const ch = sb.channel('gehoot-' + inboxTopic(room));
+  return async (payload) => {
+    let r = 'error';
+    try { r = await ch.send({ type: 'broadcast', event: 'msg', payload }); } catch (e) { /* usa el canal normal */ }
+    if (r !== 'ok') fallback(payload);
+  };
+}
+
 function shuffleId() {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 }
